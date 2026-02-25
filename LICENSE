@@ -1,22 +1,21 @@
-rpm-ostree includes code licensed under GPLv2+, LGPLv2+, (Apache 2.0 OR MIT).
-More specifically, the code in `rust/` is under `Apache 2.0 or MIT`, and
-the C code (in `src/` mostly) is under a mix of GPLv2+ or LGPLv2+.
-See these license files:
+MIT License
 
- - COPYING.GPL
- - COPYING.LGPL
- - rust/LICENSE-APACHE
- - rust/LICENSE-MIT
+Copyright (c) 2026-2004 Billal Mesloub-unity billal mesloub
 
-Most of our source files have either a license header or a SPDX license identifier.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-The original intention for rpm-ostree was to match libostree as being LGPLv2+;
-this would ensure code could be easily shared between the two, as well as other
-LGPLv2+ projects like glib.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-However [due to an accident](https://github.com/projectatomic/rpm-ostree/issues/1890),
-some GPLv2+ code was imported, and we're unlikely to easily change that now.
-
-The rationale for having the Rust code be `Apache 2.0 OR MIT` is to match
-most of the Rust ecosystem, so we can easily share it there.
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
