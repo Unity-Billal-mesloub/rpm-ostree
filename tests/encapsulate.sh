@@ -1,10 +1,7 @@
 #!/bin/bash
 set -xeuo pipefail
-# Pull the latest FCOS build, unpack its container image, and verify
-# that we can re-encapsulate it as chunked.
-
-# TODO: Switch to using a fixture
-container=quay.io/fedora/fedora-coreos:stable
+# Pull an ostree commit and verify that we can encapsulate it
+# as a chunked container image.
 
 # First, verify the legacy entrypoint still works for now
 rpm-ostree container-encapsulate --help >/dev/null
@@ -12,9 +9,20 @@ rpm-ostree container-encapsulate --help >/dev/null
 tmpdir=$(mktemp -d)
 cd ${tmpdir}
 ostree --repo=repo init --mode=bare-user
-cat /etc/ostree/remotes.d/fedora.conf >> repo/config
-# Pull and unpack the ostree content, discarding the container wrapping
-ostree container unencapsulate --write-ref=testref --repo=repo ostree-remote-registry:fedora:$container
+
+# Create a minimal ostree commit to test encapsulation. The commit needs
+# a populated rpmdb (container-encapsulate uses package data to generate
+# chunked layers) and /usr/lib/modules.
+mkdir -p rootfs/usr/bin rootfs/usr/lib/modules rootfs/usr/share/rpm
+echo '#!/bin/sh' > rootfs/usr/bin/test-encapsulate
+chmod +x rootfs/usr/bin/test-encapsulate
+# Copy host rpmdb - location varies across systems
+cp /usr/share/rpm/rpmdb.sqlite rootfs/usr/share/rpm/ 2>/dev/null || \
+  cp /usr/lib/sysimage/rpm/rpmdb.sqlite rootfs/usr/share/rpm/
+testref=testref
+ostree --repo=repo commit -b "${testref}" --tree=dir=rootfs \
+  --add-metadata-string=version=1.0 \
+  --add-metadata-string=fedora-coreos.stream=stable
 # Re-pack it as a (chunked) container
 
 cat > config.json << 'EOF'
@@ -32,7 +40,7 @@ EOF
 rpm-ostree compose container-encapsulate --repo=repo \
     --image-config=config.json \
     --label=foo=bar --label baz=blah --copymeta-opt fedora-coreos.stream --copymeta-opt nonexistent.key \
-    testref oci:test.oci
+    "${testref}" oci:test.oci
 skopeo inspect oci:test.oci | jq -r .Labels > labels.json
 for label in foo baz 'fedora-coreos.stream' usage; do 
     jq -re ".\"${label}\"" < labels.json
